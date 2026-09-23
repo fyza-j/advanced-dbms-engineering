@@ -1,0 +1,89 @@
+-- create student table
+CREATE TABLE student (
+  student_id INTEGER PRIMARY KEY,
+  std_name TEXT NOT NULL,
+  department TEXT NOT NULL,
+  semester INTEGER NOT NULL,
+  marks INTEGER NOT NULL
+);
+
+-- insert student data
+INSERT INTO student VALUES (245, 'Sara', 'SE', 3, 55);
+INSERT INTO student VALUES (241, 'Ali', 'CS', 5, 77);
+INSERT INTO student VALUES (246, 'Talha', 'SE', 5, 87);
+INSERT INTO student VALUES (247, 'Alia', 'CS', 7, 90);
+
+-- create course table
+CREATE TABLE course (
+  course_id TEXT PRIMARY KEY,
+  course_name TEXT NOT NULL,
+  credit_hours INTEGER NOT NULL
+);
+
+-- insert course data
+INSERT INTO course VALUES ('SE101', 'Software Engineering', 2); 
+INSERT INTO course VALUES ('CS102', 'Advance DBMS', 3); 
+INSERT INTO course VALUES ('CS112', 'Compiler Construction', 3);
+
+-- create enrollment table
+CREATE TABLE enrollment (
+  enrollment_id INTEGER PRIMARY KEY,
+  student_id INTEGER NOT NULL,
+  course_id TEXT NOT NULL,
+  semester INTEGER NOT NULL,
+
+  FOREIGN KEY (student_id) REFERENCES student(student_id) ON DELETE CASCADE,
+  FOREIGN KEY (course_id) REFERENCES course(course_id) ON DELETE CASCADE
+);
+
+-- insert enrollment data
+INSERT INTO enrollment(enrollment_id, student_id, course_id, semester) VALUES (2410, 241, 'CS112', 7);
+INSERT INTO enrollment(enrollment_id, student_id, course_id, semester) VALUES (2411, 245, 'SE101', 3);
+INSERT INTO enrollment(enrollment_id, student_id, course_id, semester) VALUES (2412, 246, 'SE101', 5);
+
+-- fetching data from tables
+SELECT * FROM student;
+
+SELECT * FROM course;
+
+SELECT * FROM enrollment;
+
+-- fetching data with conditions
+SELECT * FROM student WHERE semester = 7;
+
+SELECT * FROM course WHERE course_id = 'CS102';
+
+SELECT count(*) as total_students FROM student WHERE semester = 7;
+
+-- fetch data with ranking functions
+SELECT std_name, department, marks, 
+    ROW_NUMBER() OVER (
+        ORDER BY marks DESC) AS RowNum 
+FROM student;
+
+SELECT std_name, department, marks, 
+    RANK() OVER (
+        ORDER BY marks DESC) AS Rank 
+FROM student;
+
+UPDATE student SET marks = 97 where student_id = 246;
+
+SELECT std_name, department, marks, 
+    RANK() OVER (
+        ORDER BY marks DESC) AS Rank 
+FROM student;
+
+UPDATE student SET marks = 65 WHERE student_id = 245;
+
+-- fetching data with ranking functions with partition
+SELECT std_name, department, marks, 
+    RANK() OVER (
+        ORDER BY marks DESC) AS Rank 
+FROM student;
+
+SELECT std_name, department, marks, 
+    RANK() OVER(
+        PARTITION BY department
+        ORDER BY marks DESC
+    ) AS department_rank 
+FROM student;
